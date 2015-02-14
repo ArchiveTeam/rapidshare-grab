@@ -194,9 +194,9 @@ class WgetArgs(object):
         item['item_type'] = item_type
         item['item_value'] = item_value
         
-        assert item_type in ('app')
+        assert item_type in ('file')
         
-        if item_type == 'app':
+        if item_type == 'file':
             assert ':' in item_value
             item_id, item_name = item_value.splt(':', 1)
             item['item_id'] = item_id
