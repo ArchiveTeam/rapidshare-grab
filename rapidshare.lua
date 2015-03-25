@@ -18,6 +18,17 @@ read_file = function(file)
   end
 end
 
+size_file = function(file)
+  if file then
+    local f = assert(io.open(file))
+    local data = f:seek("end")
+    f:close()
+    return data
+  else
+    return ""
+  end
+end
+
 wget.callbacks.get_urls = function(file, url, is_css, iri)
   local urls = {}
   local html = nil
@@ -49,7 +60,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       check(newurl)
     end
   end
-  
+
   return urls
 end
 
@@ -57,20 +68,19 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   -- NEW for 2014: Slightly more verbose messages because people keep
   -- complaining that it's not moving or not working
   local status_code = http_stat["statcode"]
+  local size = size_file(http_stat["local_file"])
   local html = nil
-  last_http_statcode = status_code
   
   url_count = url_count + 1
   io.stdout:write(url_count .. "=" .. status_code .. " " .. url["url"] .. ".  \n")
   io.stdout:flush()
-  
-  if http_stat["orig_file_size"] < 100000 then
-    io.stdout:write("Check.  \n")
-    io.stdout:flush()
-    html = read_file(file)
-    if string.match(html, "Daily.traffic.exhausted") then
-      io.stdout:write("ERROR: Daily traffic exhausted.  \n")
+
+  if size < 100000 then
+    html = read_file(http_stat["local_file"])
+    if string.match(html, "/desktop/error/") then
+      io.stdout:write("ERROR: Daily traffic exhausted. Aborting item in 2 hours.  \n")
       io.stdout:flush()
+      os.execute("sleep "..7200)
       return wget.actions.ABORT
     end
   end
@@ -116,7 +126,7 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
 
   -- We're okay; sleep a bit (if we have to) and continue
   -- local sleep_time = 0.1 * (math.random(500, 5000) / 100.0)
-  local sleep_time = math.random(1, 5)
+  local sleep_time = 0
 
   --  if string.match(url["host"], "cdn") or string.match(url["host"], "media") then
   --    -- We should be able to go fast on images since that's what a web browser does
