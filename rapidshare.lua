@@ -65,8 +65,10 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   io.stdout:flush()
   
   if http_stat["orig_file_size"] < 100000 then
+    io.stdout:write("Check.  \n")
+    io.stdout:flush()
     html = read_file(file)
-    if string.match(html, "Daily traffic exhausted") then
+    if string.match(html, "Daily.traffic.exhausted") then
       io.stdout:write("ERROR: Daily traffic exhausted.  \n")
       io.stdout:flush()
       return wget.actions.ABORT
