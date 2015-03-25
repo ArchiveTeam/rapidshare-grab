@@ -173,9 +173,9 @@ class WgetArgs(object):
             "--truncate-output",
             "-e", "robots=off",
             "--rotate-dns",
-            "--recursive", "--level=inf",
+#            "--recursive", "--level=inf",
             "--no-parent",
-            "--page-requisites",
+#            "--page-requisites",
             "--timeout", "30",
             "--tries", "inf",
             "--domains", "rapidshare.com",
@@ -198,10 +198,10 @@ class WgetArgs(object):
         
         if item_type == 'file':
             assert ':' in item_value
-            item_id, item_name = item_value.splt(':', 1)
+            item_id, item_keyword = item_value.splt(':', 1)
             item['item_id'] = item_id
-            item['item_name'] = item_name
-            wget_args.append('https://rapidshare.com/files/{0}/{1}'.format(item_id, item_name))
+            item['item_keyword'] = item_keyword
+            wget_args.append('http://rapid-search-engine.com/?s=cache:{0}:{1}'.format(item_id, item_keyword))
         else:
             raise Exception('Unknown item')
         
