@@ -33,9 +33,13 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     html = read_file(file)
     for newurl in string.gmatch(html, '"(https?://rapidshare%.com/[^"]+)"') do
       check(newurl)
+      local newurl1 = string.gsub(newurl, "/files/[0-9]", "/files/")
+      check(newurl1)
     end
     for newurl in string.gmatch(html, '"(https?://www%.rapidshare%.com/[^"]+)"') do
       check(newurl)
+      local newurl1 = string.gsub(newurl, "/files/[0-9]", "/files/")
+      check(newurl1)
     end
   end
 
@@ -100,7 +104,7 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
 
   -- We're okay; sleep a bit (if we have to) and continue
   -- local sleep_time = 0.1 * (math.random(500, 5000) / 100.0)
-  local sleep_time = math.random(100, 200)
+  local sleep_time = math.random(50, 100)
 
   --  if string.match(url["host"], "cdn") or string.match(url["host"], "media") then
   --    -- We should be able to go fast on images since that's what a web browser does
