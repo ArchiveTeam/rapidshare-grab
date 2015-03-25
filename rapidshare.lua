@@ -83,6 +83,14 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
       os.execute("sleep "..7200)
       return wget.actions.ABORT
     end
+    if string.match(url["url"], "https?://rapid%-search%-engine%.com/") then
+      if not string.match(html, '"https?://rapidshare%.com/[^"]+"') then
+        io.stdout:write("Problem with search engine site. Aborting item in 2 hours.  \n")
+        io.stdout:flush()
+        os.execute("sleep "..7200)
+        return wget.actions.ABORT
+      end
+    end
   end
   
   if (status_code >= 200 and status_code <= 399) then
