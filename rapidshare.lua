@@ -1,26 +1,45 @@
+dofile("urlcode.lua")
+dofile("table_show.lua")
+
 local url_count = 0
 local tries = 0
-local item_type = os.getenv('item_type')
-local item_value = os.getenv('item_value')
-local item_id = os.getenv('item_id')
-local item_name = os.getenv('item_name')
 
 local downloaded = {}
+local addedtolist = {}
 
-wget.callbacks.download_child_p = function(urlpos, parent, depth, start_url_parsed, iri, verdict, reason)
-  local url = urlpos["url"]["url"]
-  local html = urlpos["link_expect_html"]
-  local parenturl = parent["url"]
+read_file = function(file)
+  if file then
+    local f = assert(io.open(file))
+    local data = f:read("*all")
+    f:close()
+    return data
+  else
+    return ""
+  end
+end
+
+wget.callbacks.get_urls = function(file, url, is_css, iri)
+  local urls = {}
   local html = nil
   
-  if item_type == "file" then
-    if string.match(url, item_id) and string.match(url, item_name) and downloaded[url] ~= true then
-      return verdict
-    else
-      return false
+  local function check(newurl)
+    if (downloaded[newurl] ~= true and addedtolist[newurl] ~= true) then
+      table.insert(urls, { url=newurl })
+      addedtolist[newurl] = true
     end
   end
   
+  if string.match(url, "https?://rapid%-search%-engine%.com/") then
+    html = read_file(file)
+    for newurl in string.gmatch(html, '"(https?://rapidshare%.com/[^"]+)"') do
+      check(newurl)
+    end
+    for newurl in string.gmatch(html, '"(https?://www%.rapidshare%.com/[^"]+)"') do
+      check(newurl)
+    end
+  end
+  
+  return urls
 end
 
 wget.callbacks.httploop_result = function(url, err, http_stat)
@@ -74,7 +93,7 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
 
   -- We're okay; sleep a bit (if we have to) and continue
   -- local sleep_time = 0.1 * (math.random(500, 5000) / 100.0)
-  local sleep_time = 0
+  local sleep_time = math.random(100, 200)
 
   --  if string.match(url["host"], "cdn") or string.match(url["host"], "media") then
   --    -- We should be able to go fast on images since that's what a web browser does
