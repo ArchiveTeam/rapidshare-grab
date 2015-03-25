@@ -57,11 +57,21 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   -- NEW for 2014: Slightly more verbose messages because people keep
   -- complaining that it's not moving or not working
   local status_code = http_stat["statcode"]
+  local html = nil
   last_http_statcode = status_code
   
   url_count = url_count + 1
   io.stdout:write(url_count .. "=" .. status_code .. " " .. url["url"] .. ".  \n")
   io.stdout:flush()
+  
+  if http_stat["orig_file_size"] < 100000 then
+    html = read_file(file)
+    if string.match(html, "Daily traffic exhausted") then
+      io.stdout:write("ERROR: Daily traffic exhausted.  \n")
+      io.stdout:flush()
+      return wget.actions.ABORT
+    end
+  end
   
   if (status_code >= 200 and status_code <= 399) then
     downloaded[url["url"]] = true
