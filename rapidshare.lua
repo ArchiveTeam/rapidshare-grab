@@ -38,6 +38,13 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       check(newurl)
     end
   end
+
+  if string.match(url, "rapidshare%.com/files/[0-9]+/") then
+    html = read_file(file)
+    for newurl in string.gmatch(html, 'location="(https?://[^%.]+%.rapidshare%.com/cgi%-bin/[^"]+)"') do
+      check(newurl)
+    end
+  end
   
   return urls
 end
