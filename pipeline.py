@@ -57,7 +57,7 @@ if not WGET_LUA:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = "20150330.01"
+VERSION = "20150330.02"
 USER_AGENT = 'ArchiveTeam'
 TRACKER_ID = 'rapidshare'
 TRACKER_HOST = 'tracker.archiveteam.org'
@@ -207,7 +207,7 @@ class WgetArgs(object):
             item_id, item_keyword = item_value.split(':', 1)
             item['item_id'] = item_id
             item['item_keyword'] = item_keyword
-            wget_args.append('http://rapidshare.com/files/{0}/{1}'.format(item_id, item_keyword))
+            wget_args.append('https://www.rapidshare.com/files/{0}/{1}'.format(item_id, item_keyword))
         else:
             raise Exception('Unknown item')
         
