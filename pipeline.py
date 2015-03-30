@@ -194,7 +194,7 @@ class WgetArgs(object):
         item['item_type'] = item_type
         item['item_value'] = item_value
         
-        assert item_type in ('file')
+        assert item_type in ('file', 'rapid')
         
         if item_type == 'file':
             assert ':' in item_value
@@ -202,6 +202,12 @@ class WgetArgs(object):
             item['item_id'] = item_id
             item['item_keyword'] = item_keyword
             wget_args.append('http://rapid-search-engine.com/?s=cache:{0}:{1}'.format(item_id, item_keyword))
+        elif item_type == 'rapid':
+            assert ':' in item_value
+            item_id, item_keyword = item_value.split(':', 1)
+            item['item_id'] = item_id
+            item['item_keyword'] = item_keyword
+            wget_args.append('http://rapidshare.com/files/{0}/{1}'.format(item_id, item_keyword))
         else:
             raise Exception('Unknown item')
         
